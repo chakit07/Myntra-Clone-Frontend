@@ -1,3 +1,15 @@
+:root{
+  --body_background: white;
+  --body_color: black;
+  --link_color:navy;
+
+}
+[dark-theme="dark"]{
+  --body_background: #282c34;
+  --body_color: white;
+  --link_color: cyan;
+}
+
 * {
     margin: 0;
     padding: 0;
