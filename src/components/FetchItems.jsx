@@ -16,19 +16,33 @@ const FetchItems = () => {
     dispatch(fetchStatusActions.markFetchingStarted());
 
     fetch("http://localhost:3000/items", { signal })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then((data) => {
         const items = data.items || [];
         console.log("Fetched items", items);
         dispatch(fetchStatusActions.markFetchDone());
-        dispatch(fetchStatusActions.markFetchingFinished());
         dispatch(itemsActions.addInitialItems(items));
+      })
+      .catch((err) => {
+        if (err.name === "AbortError") {
+          console.log("Fetch aborted, no problem.");
+        } else {
+          console.error("Fetch error:", err);
+        }
+      })
+      .finally(() => {
+        dispatch(fetchStatusActions.markFetchingFinished());
       });
 
     return () => {
-      controller.abort();
+      controller.abort(); // clean up fetch
     };
-  }, [fetchStatus.fetchDone]);
+  }, [fetchStatus.fetchDone, dispatch]);
 
   return null;
 };
