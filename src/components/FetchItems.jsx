@@ -15,7 +15,7 @@ const FetchItems = () => {
 
     dispatch(fetchStatusActions.markFetchingStarted());
 
-    fetch("http://localhost:3000/items", { signal })
+    fetch("http://localhost:3000/api/items-list", { signal })
       .then((res) => {
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
