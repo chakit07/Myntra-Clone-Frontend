@@ -1,29 +1,56 @@
+import { loadStripe } from "@stripe/stripe-js";
 import { useSelector } from "react-redux";
+
+const stripePromise = loadStripe(
+  "pk_test_51RqZ6tD2J7niTfb3HZUAuuIIOkozsAPHdML8sslHrlTRac9UYKr6EGkhlG2ucIY72QHUJZnab6rU4gEH6xq2jFNS00CILbRiGG"
+); // ✅ Stripe initialized
 
 const BagSummary = () => {
   const bagItemIds = useSelector((state) => state.bag);
   const items = useSelector((state) => state.items);
-  const finalItems = items.filter((item) => {
-    const itemIndex = bagItemIds.indexOf(item.id);
-    return itemIndex >= 0;
-  });
 
+  const filteredItems = items.filter((item) => bagItemIds.includes(item.id));
   const CONVENIENCE_FEES = 99;
   let totalItem = bagItemIds.length;
-  let totalMRP = 0;
-  let totalDiscount = 0;
 
-  finalItems.forEach((bagItem) => {
-    totalMRP += bagItem.original_price;
-    totalDiscount += bagItem.original_price - bagItem.current_price;
+  let totalMRP = 0,
+    totalDiscount = 0;
+
+  filteredItems.forEach((item) => {
+    totalMRP += item.original_price;
+    totalDiscount += item.original_price - item.current_price;
   });
+  const finalPayment = totalMRP - totalDiscount + CONVENIENCE_FEES;
 
-  let finalPayment = totalMRP - totalDiscount + CONVENIENCE_FEES;
+  const handleCheckout = async () => {
+    const stripe = await stripePromise;
+
+    const response = await fetch(
+      "http://localhost:3000/api/create-checkout-session",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ items: filteredItems }),
+      }
+    );
+
+    const session = await response.json();
+
+    const result = await stripe.redirectToCheckout({
+      sessionId: session.id,
+    });
+
+    if (result.error) {
+      alert(result.error.message);
+    }
+  };
 
   return (
     <div className="bag-summary">
       <div className="bag-details-container">
-        <div className="price-header">PRICE DETAILS ({totalItem} Items) </div>
+        <div className="price-header">PRICE DETAILS({totalItem} Items) </div>
         <div className="price-item">
           <span className="price-item-tag">Total MRP</span>
           <span className="price-item-value">₹{totalMRP}</span>
@@ -44,8 +71,8 @@ const BagSummary = () => {
           <span className="price-item-value">₹{finalPayment}</span>
         </div>
       </div>
-      <button className="btn-place-order">
-        <div className="css-xjhrni">PLACE ORDER</div>
+      <button className="btn-place-order" onClick={handleCheckout}>
+        <div className="css-xjhrni">Proceed to Checkout</div>
       </button>
     </div>
   );

@@ -6,7 +6,9 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./routes/App.jsx";
 import Bag from "./routes/Bag.jsx";
+import CancelPage from "./routes/CancelPage.jsx";
 import Home from "./routes/Home.jsx";
+import SuccessPage from "./routes/SuccessPage.jsx";
 import myntraStore from "./store/index.js";
 
 const router = createBrowserRouter([
@@ -19,6 +21,11 @@ const router = createBrowserRouter([
         path: "/bag",
         element: <Bag />,
       },
+      {
+        path: "/success",
+        element: <SuccessPage />,
+      },
+      { path: "/cancel", element: <CancelPage /> },
     ],
   },
 ]);
