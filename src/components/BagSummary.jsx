@@ -25,16 +25,13 @@ const BagSummary = () => {
   const handleCheckout = async () => {
     const stripe = await stripePromise;
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
-    const response = await fetch(
-      `${backendUrl}/api/payment/create-checkout-session`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ items: filteredItems }),
-      }
-    );
+    const response = await fetch(`${backendUrl}/api/create-checkout-session`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ items: filteredItems }),
+    });
 
     const session = await response.json();
 
