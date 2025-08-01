@@ -24,9 +24,9 @@ const BagSummary = () => {
 
   const handleCheckout = async () => {
     const stripe = await stripePromise;
-
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const response = await fetch(
-      "http://localhost:3000/api/create-checkout-session",
+      `${backendUrl}/api/payment/create-checkout-session`,
       {
         method: "POST",
         headers: {
