@@ -15,7 +15,9 @@ const FetchItems = () => {
 
     dispatch(fetchStatusActions.markFetchingStarted());
 
-    fetch("http://localhost:3000/api/items-list", { signal })
+    fetch("https://myntra-clone-backend-bwlc.onrender.com/api/items-list", {
+      signal,
+    })
       .then((res) => {
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
